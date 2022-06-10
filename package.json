@@ -1,0 +1,18 @@
+{
+  "name": "schedule_optimizer",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node --loader ts-node/esm ./index.ts"
+  },
+  "repository": "https://github.com/Phelizer/schedule-optimizer",
+  "author": "Oleksandr Chornyi",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.41"
+  },
+  "dependencies": {
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  }
+}

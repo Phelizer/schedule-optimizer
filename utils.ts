@@ -1,9 +1,11 @@
 import { compose, curry } from "ramda";
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
-export function fitness(tasksInSchedule: Task[]): number {
+function fitnessOfTasks(tasksInSchedule: Task[]): number {
   return tasksInSchedule.reduce((acc, task) => acc + task.weight, 0);
 }
+
+export const fitness = compose(fitnessOfTasks, binaryScheduleToTasks);
 
 export function isOverlap(schedule: Task[], task: Task): boolean {
   return schedule.reduce(
@@ -89,10 +91,10 @@ export interface BinaryScheduleToTasks {
   (allExistinTasks: Task[], schedule: BinarySchedule): Task[];
 }
 
-export const binaryScheduleToTasks = (
+export function binaryScheduleToTasks(
   allExistinTasks: Task[],
   schedule: BinarySchedule
-) => {
+) {
   return schedule
     .map((isPresent, index) =>
       isPresent
@@ -100,7 +102,7 @@ export const binaryScheduleToTasks = (
         : undefined
     )
     .filter((elem): elem is Task => !!elem);
-};
+}
 
 function findTaskByExecutor(allExistinTasks: Task[], executor: Executor): Task {
   const task = allExistinTasks.find((task) => task.executor === executor);

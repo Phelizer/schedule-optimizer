@@ -69,7 +69,7 @@ function geneticAlgorithStep(
 
   // estimations
   const estimatedSchedules = validSchedules.map((schedule) => ({
-    fitness: fitness(binaryScheduleToTasks(listOfTasks, schedule)),
+    fitness: fitness(listOfTasks, schedule),
     schedule,
   }));
 

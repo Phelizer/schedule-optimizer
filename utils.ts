@@ -23,3 +23,7 @@ export const tasksToBinarySchedule: TasksToBinarySchedule = (
     tasks.some((task) => task.executor === executor)
   );
 };
+
+export function probability(x: number) {
+  return Math.random() <= x;
+}

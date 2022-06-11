@@ -27,11 +27,11 @@ export function checkIfScheduleHasOverlaps(
   });
 }
 
-export const initPopulationFactory = (
+export const initSchedulesFactory = (
   adapter: (tasks: Task[]) => BinarySchedule
-) => compose((schedules) => schedules.map(adapter), formInitialPopulation);
+) => compose((schedules) => schedules.map(adapter), formInitialSchedules);
 
-function formInitialPopulation(tasks: Task[]): Task[][] {
+function formInitialSchedules(tasks: Task[]): Task[][] {
   return tasks.map((task) => [task]);
 }
 

@@ -4,7 +4,7 @@ import {
   binaryScheduleToTasks,
   checkIfScheduleHasOverlaps,
   fitness,
-  initPopulationFactory,
+  initSchedulesFactory,
   isUndefined,
   probability,
   randomInt,
@@ -24,7 +24,7 @@ export function geneticAlgorith(
 ): Task[] {
   // form initial population
   const appliedTasksToBinarySchedule = curry(tasksToBinarySchedule)(tasks);
-  const initialPopulation = initPopulationFactory(appliedTasksToBinarySchedule)(
+  const initialPopulation = initSchedulesFactory(appliedTasksToBinarySchedule)(
     tasks
   );
 

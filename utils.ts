@@ -13,14 +13,14 @@ export function isOverlap(schedule: Task[], task: Task): boolean {
 }
 
 export interface TasksToBinarySchedule {
-  (allExistinTasks: Task[], tasks: Task[]): BinarySchedule;
+  (allExistingTasks: Task[], tasks: Task[]): BinarySchedule;
 }
 
 export const tasksToBinarySchedule: TasksToBinarySchedule = (
-  allExistinTasks: Task[],
+  allExistingTasks: Task[],
   tasks: Task[]
 ) => {
-  return allExistinTasks.map(({ executor }) =>
+  return allExistingTasks.map(({ executor }) =>
     tasks.some((task) => task.executor === executor)
   );
 };

@@ -1,5 +1,9 @@
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
+export function fitness(tasksInSchedule: Task[]): number {
+  return tasksInSchedule.reduce((acc, task) => acc + task.weight, 0);
+}
+
 export function isOverlap(schedule: Task[], task: Task): boolean {
   return schedule.reduce(
     (acc: boolean, x) =>
@@ -75,4 +79,12 @@ export function probability(x: number) {
 
 export function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export function isUndefined(value: unknown): value is undefined {
+  if (value === undefined) {
+    return true;
+  }
+
+  return false;
 }

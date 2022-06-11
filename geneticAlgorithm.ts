@@ -1,9 +1,10 @@
-import { compose, curry, prop, reverse, sortBy, splitEvery } from "ramda";
+import { curry, prop, reverse, sortBy, splitEvery } from "ramda";
 import { BinarySchedule, Task } from "./models/Task.model";
 import {
   binaryScheduleToTasks,
   checkIfScheduleHasOverlaps,
   fitness,
+  initPopulationFactory,
   isUndefined,
   probability,
   randomInt,
@@ -111,13 +112,6 @@ function breed(
 
   return [];
 }
-
-function formInitialPopulation(tasks: Task[]): Task[][] {
-  return tasks.map((task) => [task]);
-}
-
-const initPopulationFactory = (adapter: (tasks: Task[]) => BinarySchedule) =>
-  compose((schedules) => schedules.map(adapter), formInitialPopulation);
 
 /**
  * @param  {BinaryTask} schedule1

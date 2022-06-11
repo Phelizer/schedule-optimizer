@@ -1,3 +1,4 @@
+import { compose } from "ramda";
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
 export function fitness(tasksInSchedule: Task[]): number {
@@ -24,6 +25,14 @@ export function checkIfScheduleHasOverlaps(
   return tasksInSchedule.some((task) => {
     return isOverlap(otherTasks(tasksInSchedule, task), task);
   });
+}
+
+export const initPopulationFactory = (
+  adapter: (tasks: Task[]) => BinarySchedule
+) => compose((schedules) => schedules.map(adapter), formInitialPopulation);
+
+function formInitialPopulation(tasks: Task[]): Task[][] {
+  return tasks.map((task) => [task]);
 }
 
 function otherTasks(tasks: Task[], task: Task): Task[] {

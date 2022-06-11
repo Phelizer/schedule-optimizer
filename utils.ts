@@ -1,4 +1,3 @@
-import { identity } from "ramda";
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
 export function isOverlap(schedule: Task[], task: Task): boolean {
@@ -10,6 +9,21 @@ export function isOverlap(schedule: Task[], task: Task): boolean {
         : acc || true,
     false
   );
+}
+
+export function checkIfScheduleHasOverlaps(
+  allExistingTasks: Task[],
+  schedule: BinarySchedule
+): boolean {
+  const tasksInSchedule = binaryScheduleToTasks(allExistingTasks, schedule);
+
+  return tasksInSchedule.some((task) => {
+    return isOverlap(otherTasks(tasksInSchedule, task), task);
+  });
+}
+
+function otherTasks(tasks: Task[], task: Task): Task[] {
+  return tasks.filter((t) => t.executor !== task.executor);
 }
 
 export interface TasksToBinarySchedule {

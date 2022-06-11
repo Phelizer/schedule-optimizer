@@ -1,4 +1,4 @@
-import { compose, curry, prop, sortBy, splitEvery } from "ramda";
+import { compose, curry, prop, reverse, sortBy, splitEvery } from "ramda";
 import { BinarySchedule, Task } from "./models/Task.model";
 import {
   binaryScheduleToTasks,
@@ -14,25 +14,44 @@ interface GeneticOptions {
   crossoverChance: number;
   mutationChance: number;
   populationMaxSize: number;
+  iterationAllowed: number;
 }
 
 export function geneticAlgorith(
   tasks: Task[],
   options: GeneticOptions
-): Task[] {
+): Task[] | never {
   // forming initial population
   const appliedTasksToBinarySchedule = curry(tasksToBinarySchedule)(tasks);
   const initialPopulation = initPopulationFactory(appliedTasksToBinarySchedule)(
     tasks
   );
 
+  const result = geneticAlgorithStep(initialPopulation, tasks, options, 1);
+
+  if (!isUndefined(result)) {
+    return binaryScheduleToTasks(tasks, result);
+  }
+
+  throw new Error(
+    "The result of the algorithm work is undefined. That means that the last population contained no individuals.\n" +
+      "Try again, if that continues to happen - check you input data for validity"
+  );
+}
+
+function geneticAlgorithStep(
+  population: BinarySchedule[],
+  listOfTasks: Task[],
+  options: GeneticOptions,
+  iterationNumber: number
+): BinarySchedule | undefined {
   // crossover
-  const pairs = splitEvery(2, initialPopulation).filter(
+  const pairs = splitEvery(2, population).filter(
     (chunk): chunk is [BinarySchedule, BinarySchedule] => chunk.length === 2
   );
 
   const appliedBreed = (parents: [BinarySchedule, BinarySchedule]) =>
-    breed(tasks.length, options.crossoverChance, parents);
+    breed(listOfTasks.length, options.crossoverChance, parents);
 
   const children: BinarySchedule[] = pairs
     .map(appliedBreed)
@@ -43,24 +62,45 @@ export function geneticAlgorith(
     mutateByChance(options.mutationChance, child)
   );
 
-  const parentsAndChildren = [...initialPopulation, ...mutated];
-
   // allow to survive only for those schedules, which are valid (have no overlaps)
+  const parentsAndChildren = [...population, ...mutated];
   const validSchedules = parentsAndChildren.filter(
-    (schedule) => !checkIfScheduleHasOverlaps(tasks, schedule)
+    (schedule) => !checkIfScheduleHasOverlaps(listOfTasks, schedule)
   );
 
   // estimations
   const estimatedSchedules = validSchedules.map((schedule) => ({
-    fitness: fitness(binaryScheduleToTasks(tasks, schedule)),
+    fitness: fitness(binaryScheduleToTasks(listOfTasks, schedule)),
     schedule,
   }));
 
-  const sortedEstimatedSchedules = sortBy(prop("fitness"), estimatedSchedules);
+  // survival
+  const ascendingEstimatedSchedules = sortBy(
+    prop("fitness"),
+    estimatedSchedules
+  );
 
-  console.log(sortedEstimatedSchedules);
+  const descendingEstimatedSchedules = reverse(ascendingEstimatedSchedules);
+  const descendingSchedules = descendingEstimatedSchedules.map(
+    prop("schedule")
+  );
 
-  return [];
+  const nextPopulation = descendingSchedules.slice(
+    0,
+    options.populationMaxSize
+  );
+
+  // exit clause
+  if (iterationNumber >= options.iterationAllowed) {
+    return nextPopulation[0];
+  }
+
+  return geneticAlgorithStep(
+    nextPopulation,
+    listOfTasks,
+    options,
+    iterationNumber + 1
+  );
 }
 
 function breed(

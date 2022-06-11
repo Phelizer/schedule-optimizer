@@ -1,4 +1,4 @@
-import { compose } from "ramda";
+import { compose, curry } from "ramda";
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
 export function fitness(tasksInSchedule: Task[]): number {
@@ -38,6 +38,39 @@ function formInitialSchedules(tasks: Task[]): Task[][] {
 function otherTasks(tasks: Task[], task: Task): Task[] {
   return tasks.filter((t) => t.executor !== task.executor);
 }
+
+export function mutate(schedule: BinarySchedule): BinarySchedule {
+  const indexes = schedule.map((_, index) => index);
+  const indexesOfPresentTasks = indexes.filter((index) => schedule[index]);
+  const indexesOfAbsentTasks = indexes.filter((index) => !schedule[index]);
+
+  const [minPresentIndex, maxPresentIndex] = [0, indexesOfPresentTasks.length];
+  const indexOfPresentToToggle =
+    indexesOfPresentTasks[randomInt(minPresentIndex, maxPresentIndex)];
+
+  const [minAbsentIndex, maxAbsentIndex] = [0, indexesOfAbsentTasks.length];
+  const indexOfAbsentToToggle =
+    indexesOfAbsentTasks[randomInt(minAbsentIndex, maxAbsentIndex)];
+
+  const mutatedPresent = mutatePresent(schedule, indexOfPresentToToggle);
+  return mutateAbsent(mutatedPresent, indexOfAbsentToToggle);
+}
+
+const curriedChangePresence = curry(changePresence);
+function changePresence(
+  replaceValue: boolean,
+  schedule: BinarySchedule,
+  index: number
+): BinarySchedule {
+  if (!isUndefined(index)) {
+    return Object.assign([], schedule, { [index]: replaceValue });
+  }
+
+  return schedule;
+}
+
+const mutatePresent = curriedChangePresence(false);
+const mutateAbsent = curriedChangePresence(true);
 
 export interface TasksToBinarySchedule {
   (allExistingTasks: Task[], tasks: Task[]): BinarySchedule;

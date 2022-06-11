@@ -6,6 +6,7 @@ import {
   fitness,
   initSchedulesFactory,
   isUndefined,
+  mutate,
   probability,
   randomInt,
   tasksToBinarySchedule,
@@ -157,36 +158,3 @@ function mutateByChance(
 
   return schedule;
 }
-
-function mutate(schedule: BinarySchedule): BinarySchedule {
-  const indexes = schedule.map((_, index) => index);
-  const indexesOfPresentTasks = indexes.filter((index) => schedule[index]);
-  const indexesOfAbsentTasks = indexes.filter((index) => !schedule[index]);
-
-  const [minPresentIndex, maxPresentIndex] = [0, indexesOfPresentTasks.length];
-  const indexOfPresentToToggle =
-    indexesOfPresentTasks[randomInt(minPresentIndex, maxPresentIndex)];
-
-  const [minAbsentIndex, maxAbsentIndex] = [0, indexesOfAbsentTasks.length];
-  const indexOfAbsentToToggle =
-    indexesOfAbsentTasks[randomInt(minAbsentIndex, maxAbsentIndex)];
-
-  const mutatedPresent = mutatePresent(schedule, indexOfPresentToToggle);
-  return mutateAbsent(mutatedPresent, indexOfAbsentToToggle);
-}
-
-const curriedChangePresence = curry(changePresence);
-function changePresence(
-  replaceValue: boolean,
-  schedule: BinarySchedule,
-  index: number
-): BinarySchedule {
-  if (!isUndefined(index)) {
-    return Object.assign([], schedule, { [index]: replaceValue });
-  }
-
-  return schedule;
-}
-
-const mutatePresent = curriedChangePresence(false);
-const mutateAbsent = curriedChangePresence(true);

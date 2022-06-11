@@ -1,7 +1,9 @@
-export type Minister = `M${number}`;
+export type Executor = `M${number}`;
 export interface Task {
-  executor: Minister;
+  executor: Executor;
   startTime: Date;
   endTime: Date;
   weight: number;
 }
+
+export type BinarySchedule = boolean[];

@@ -20,8 +20,8 @@ interface GeneticOptions {
 export function geneticAlgorith(
   tasks: Task[],
   options: GeneticOptions
-): Task[] | never {
-  // forming initial population
+): Task[] {
+  // form initial population
   const appliedTasksToBinarySchedule = curry(tasksToBinarySchedule)(tasks);
   const initialPopulation = initPopulationFactory(appliedTasksToBinarySchedule)(
     tasks
@@ -33,10 +33,7 @@ export function geneticAlgorith(
     return binaryScheduleToTasks(tasks, result);
   }
 
-  throw new Error(
-    "The result of the algorithm work is undefined. That means that the last population contained no individuals.\n" +
-      "Try again, if that continues to happen - check you input data for validity"
-  );
+  return [];
 }
 
 function geneticAlgorithStep(

@@ -1,7 +1,6 @@
 import { compose, curry, splitEvery } from "ramda";
-import { MOCKED_TASKS } from "./mockedData";
 import { BinarySchedule, Task } from "./models/Task.model";
-import { probability, tasksToBinarySchedule } from "./utils";
+import { probability, randomInt, tasksToBinarySchedule } from "./utils";
 
 interface GeneticOptions {
   crossoverChance: number;
@@ -14,7 +13,7 @@ export function geneticAlgorith(
   options: GeneticOptions
 ): Task[] {
   // forming initial population
-  const appliedTasksToBinarySchedule = curry(tasksToBinarySchedule)(tasks); // was MOCKED_TASKS
+  const appliedTasksToBinarySchedule = curry(tasksToBinarySchedule)(tasks);
   const initialPopulation = initPopulationFactory(appliedTasksToBinarySchedule)(
     tasks
   );
@@ -83,4 +82,30 @@ export function randomCrossoverPoint(length: number): number {
   const min = 1;
   const max = length - 1;
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function mutate(schedule: BinarySchedule): BinarySchedule {
+  const indexes = schedule.map((_, index) => index);
+  const indexesOfPresentTasks = indexes.filter((index) => schedule[index]);
+  const indexesOfAbsentTasks = indexes.filter((index) => !schedule[index]);
+
+  //[2, 5]
+
+  const [minPresentIndex, maxPresentIndex] = [0, indexesOfPresentTasks.length];
+  const indexOfPresentToToggle =
+    indexesOfPresentTasks[randomInt(minPresentIndex, maxPresentIndex)];
+
+  const [minAbsentIndex, maxAbsentIndex] = [0, indexesOfAbsentTasks.length];
+  const indexOfAbsentToToggle =
+    indexesOfAbsentTasks[randomInt(minAbsentIndex, maxAbsentIndex)];
+
+  //   const indexToMutate = Math.floor(Math.random() * (max - min)) + min;
+  const mutatedSchedule = Object.assign(
+    [],
+    schedule,
+    { [indexOfPresentToToggle]: false },
+    { [indexOfAbsentToToggle]: true }
+  );
+
+  return mutatedSchedule;
 }

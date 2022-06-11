@@ -1,6 +1,14 @@
-import { compose, curry, splitEvery } from "ramda";
+import { compose, curry, prop, sortBy, splitEvery } from "ramda";
 import { BinarySchedule, Task } from "./models/Task.model";
-import { probability, randomInt, tasksToBinarySchedule } from "./utils";
+import {
+  binaryScheduleToTasks,
+  checkIfScheduleHasOverlaps,
+  fitness,
+  isUndefined,
+  probability,
+  randomInt,
+  tasksToBinarySchedule,
+} from "./utils";
 
 interface GeneticOptions {
   crossoverChance: number;
@@ -29,6 +37,30 @@ export function geneticAlgorith(
   const children: BinarySchedule[] = pairs
     .map(appliedBreed)
     .reduce((a: BinarySchedule[], b) => [...a, ...b], []);
+
+  // mutations
+  const mutated = children.map((child) =>
+    mutateByChance(options.mutationChance, child)
+  );
+
+  const parentsAndChildren = [...initialPopulation, ...mutated];
+
+  // allow to survive only for those schedules, which are valid (have no overlaps)
+  const validSchedules = parentsAndChildren.filter(
+    (schedule) => !checkIfScheduleHasOverlaps(tasks, schedule)
+  );
+
+  // estimations
+  const estimatedSchedules = validSchedules.map((schedule) => ({
+    fitness: fitness(binaryScheduleToTasks(tasks, schedule)),
+    schedule,
+  }));
+
+  const sortedEstimatedSchedules = sortBy(prop("fitness"), estimatedSchedules);
+
+  console.log(sortedEstimatedSchedules);
+
+  return [];
 }
 
 function breed(
@@ -84,12 +116,21 @@ export function randomCrossoverPoint(length: number): number {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function mutateByChance(
+  mutationChance: number,
+  schedule: BinarySchedule
+): BinarySchedule {
+  if (probability(mutationChance)) {
+    return mutate(schedule);
+  }
+
+  return schedule;
+}
+
 function mutate(schedule: BinarySchedule): BinarySchedule {
   const indexes = schedule.map((_, index) => index);
   const indexesOfPresentTasks = indexes.filter((index) => schedule[index]);
   const indexesOfAbsentTasks = indexes.filter((index) => !schedule[index]);
-
-  //[2, 5]
 
   const [minPresentIndex, maxPresentIndex] = [0, indexesOfPresentTasks.length];
   const indexOfPresentToToggle =
@@ -99,13 +140,22 @@ function mutate(schedule: BinarySchedule): BinarySchedule {
   const indexOfAbsentToToggle =
     indexesOfAbsentTasks[randomInt(minAbsentIndex, maxAbsentIndex)];
 
-  //   const indexToMutate = Math.floor(Math.random() * (max - min)) + min;
-  const mutatedSchedule = Object.assign(
-    [],
-    schedule,
-    { [indexOfPresentToToggle]: false },
-    { [indexOfAbsentToToggle]: true }
-  );
-
-  return mutatedSchedule;
+  const mutatedPresent = mutatePresent(schedule, indexOfPresentToToggle);
+  return mutateAbsent(mutatedPresent, indexOfAbsentToToggle);
 }
+
+const curriedChangePresence = curry(changePresence);
+function changePresence(
+  replaceValue: boolean,
+  schedule: BinarySchedule,
+  index: number
+): BinarySchedule {
+  if (!isUndefined(index)) {
+    return Object.assign([], schedule, { [index]: replaceValue });
+  }
+
+  return schedule;
+}
+
+const mutatePresent = curriedChangePresence(false);
+const mutateAbsent = curriedChangePresence(true);

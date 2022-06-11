@@ -58,3 +58,7 @@ function numberToExecutor(num: number): Executor {
 export function probability(x: number) {
   return Math.random() <= x;
 }
+
+export function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}

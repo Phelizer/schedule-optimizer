@@ -1,4 +1,4 @@
-import { Task } from "./models/Task.model";
+import { BinarySchedule, Task } from "./models/Task.model";
 
 export function isOverlap(schedule: Task[], task: Task): boolean {
   return schedule.reduce(
@@ -10,3 +10,16 @@ export function isOverlap(schedule: Task[], task: Task): boolean {
     false
   );
 }
+
+export interface TasksToBinarySchedule {
+  (allExistinTasks: Task[], tasks: Task[]): BinarySchedule;
+}
+
+export const tasksToBinarySchedule: TasksToBinarySchedule = (
+  allExistinTasks: Task[],
+  tasks: Task[]
+) => {
+  return allExistinTasks.map(({ executor }) =>
+    tasks.some((task) => task.executor === executor)
+  );
+};

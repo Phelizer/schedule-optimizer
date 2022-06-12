@@ -1,7 +1,7 @@
 import { compose, curry } from "ramda";
 import { BinarySchedule, Executor, Task } from "./models/Task.model";
 
-function fitnessOfTasks(tasksInSchedule: Task[]): number {
+export function fitnessOfTasks(tasksInSchedule: Task[]): number {
   return tasksInSchedule.reduce((acc, task) => acc + task.weight, 0);
 }
 

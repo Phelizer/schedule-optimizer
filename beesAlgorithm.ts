@@ -8,7 +8,7 @@ import {
   tasksToBinarySchedule,
 } from "./utils";
 
-interface BeesOptions {
+export interface BeesOptions {
   beesToBestSchedulesNumber: number;
   beesToOtherSchedulesNumber: number;
   bestSchedulesNumber: number;

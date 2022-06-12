@@ -11,7 +11,7 @@ import {
   tasksToBinarySchedule,
 } from "./utils";
 
-interface GeneticOptions {
+export interface GeneticOptions {
   crossoverChance: number;
   mutationChance: number;
   populationMaxSize: number;

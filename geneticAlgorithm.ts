@@ -44,7 +44,9 @@ function geneticAlgorithStep(
   iterationNumber: number
 ): BinarySchedule | undefined {
   // crossover
-  const pairs = splitEvery(2, population).filter(
+  const appliedFitness = curry(fitness)(listOfTasks);
+  const sortedPopulation = reverse(sortBy(appliedFitness, population));
+  const pairs = splitEvery(2, sortedPopulation).filter(
     (chunk): chunk is [BinarySchedule, BinarySchedule] => chunk.length === 2
   );
 

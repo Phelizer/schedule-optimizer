@@ -22,7 +22,9 @@ function taskFactory(
     executor,
     weight: randomInt(minWeight, maxWeight),
     startTime: new Date(startTimestamp),
-    endTime: new Date(startTimestamp + halfAnHourInMilliseconds),
+    endTime: new Date(
+      startTimestamp + halfAnHourInMilliseconds * randomInt(1, 3)
+    ),
   };
 }
 

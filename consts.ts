@@ -11,7 +11,7 @@ export const geneticOptions: GeneticOptions = {
 export const beesOptions: BeesOptions = {
   beesToBestSchedulesNumber: 15,
   beesToOtherSchedulesNumber: 10,
-  bestSchedulesNumber: 20,
+  bestSchedulesNumber: 9,
   totalPickedSchedulesNumber: 18,
   iterationAllowed: 100,
 };

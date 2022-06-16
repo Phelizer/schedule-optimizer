@@ -1,5 +1,5 @@
-import { beesAlgorithm, BeesOptions } from "./beesAlgorithm";
-import { geneticAlgorith, GeneticOptions } from "./geneticAlgorithm";
+import { beesAlgorithm } from "./beesAlgorithm";
+import { geneticAlgorith } from "./geneticAlgorithm";
 import { greedyAlgorithm } from "./greedyAlgorithm";
 import * as readline from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
@@ -7,21 +7,7 @@ import fs from "fs";
 import { Task } from "./models/Task.model";
 import { prop } from "ramda";
 import { fitnessOfTasks } from "./utils";
-
-const geneticOptions: GeneticOptions = {
-  crossoverChance: 0.7,
-  populationMaxSize: 70,
-  mutationChance: 0.3,
-  iterationAllowed: 100,
-};
-
-const beesOptions: BeesOptions = {
-  beesToBestSchedulesNumber: 15,
-  beesToOtherSchedulesNumber: 10,
-  bestSchedulesNumber: 20,
-  totalPickedSchedulesNumber: 40,
-  iterationAllowed: 10,
-};
+import { beesOptions, geneticOptions } from "./consts";
 
 const rl = readline.createInterface({ input, output });
 rl.question("Input path to the file with input data ", (path) => {
@@ -36,6 +22,8 @@ rl.question("Input path to the file with input data ", (path) => {
   );
 
   displayResult("Bees Colony Algorithm", beesAlgorithm(inputData, beesOptions));
+
+  process.exit();
 });
 
 function displayResult(algorithmName: string, result: Task[]) {
